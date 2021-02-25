@@ -34,5 +34,53 @@ namespace fileman.Properties {
                 this["DefaultPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte StringsOnPage {
+            get {
+                return ((byte)(this["StringsOnPage"]));
+            }
+            set {
+                this["StringsOnPage"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string HelpFile {
+            get {
+                return ((string)(this["HelpFile"]));
+            }
+            set {
+                this["HelpFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public byte ViewMode {
+            get {
+                return ((byte)(this["ViewMode"]));
+            }
+            set {
+                this["ViewMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ErrorsFile {
+            get {
+                return ((string)(this["ErrorsFile"]));
+            }
+            set {
+                this["ErrorsFile"] = value;
+            }
+        }
     }
 }
