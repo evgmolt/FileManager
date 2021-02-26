@@ -11,26 +11,24 @@ namespace fileman
     {
         static void Main(string[] args)
         {
-            if (Properties.Settings.Default.DefaultPath != String.Empty)
-            {
-                Directory.SetCurrentDirectory(Properties.Settings.Default.DefaultPath);
-            }
-            else
-            {
-                Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
-                Properties.Settings.Default.HelpFile = Directory.GetCurrentDirectory() + "\\" + Str.helpFileName;
-                Properties.Settings.Default.ViewMode = 0;
-                Properties.Settings.Default.StringsOnPage = 20;
-                if (!Directory.Exists(Str.errorsDirName))
-                    Directory.CreateDirectory(Str.errorsDirName);
-                Properties.Settings.Default.ErrorsFile = Directory.GetCurrentDirectory() + "\\" + 
-                    Str.errorsDirName + "\\" + Str.errorsFileName;
-            }
+            InitSize();
+            InitSettings();
+            Walls walls = new Walls(Const.fieldWidth - 1, Const.fieldHeight - 1);
+
             do
             {
+                ShowDirectory(new DirectoryInfo(Directory.GetCurrentDirectory()), walls);
+//                walls.Draw();
+                Console.SetCursorPosition(Const.left, Const.promptPosition);
                 Console.Write(Directory.GetCurrentDirectory().ToString() + "> ");
                 string enterStr = Console.ReadLine();
+                Console.Clear();
                 List<string> enters = Commands.ParseCommand(enterStr);
+                if (enters == null)
+                {
+                    Console.WriteLine(Str.syntaxErr);
+                }
+                else
                 if (enters[0] != String.Empty)
                 switch (Commands.GetCommandNum(enters[0]))
                 {
@@ -41,7 +39,7 @@ namespace fileman
                         Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
                         Properties.Settings.Default.Save();
                         return;
-                    case 2: //вывод содержимого текущей папки
+                    case 2: //вывод содержимого папки
                         System.IO.DirectoryInfo startPathInfo;
                         if (enters.Count == 1)
                         {
@@ -51,16 +49,7 @@ namespace fileman
                         {
                             startPathInfo = new DirectoryInfo(enters[1]);
                         }
-                        try
-                        {
-                            System.IO.DirectoryInfo[] subDirs = startPathInfo.GetDirectories();
-                            System.IO.FileInfo[] files = startPathInfo.GetFiles("*.*");
-                            ShowDir(subDirs, files);
-                        }
-                        catch (Exception e)
-                        {
-                            ShowAndSaveError(e);
-                        }
+                        ShowDirectory(startPathInfo, walls);
                         break;
                     case 3: //смена текущей папки
                         if (enters.Count < 2)
@@ -174,6 +163,36 @@ namespace fileman
             while (true);
         }
 
+        static void InitSettings()
+        {
+            Properties.Settings.Default.StringsOnPage = Const.fieldHeight - 5;
+            if (Properties.Settings.Default.DefaultPath != String.Empty)
+            {
+                Directory.SetCurrentDirectory(Properties.Settings.Default.DefaultPath);
+            }
+            else
+            {
+                Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
+                Properties.Settings.Default.HelpFile = Directory.GetCurrentDirectory() + "\\" + Str.helpFileName;
+                Properties.Settings.Default.ViewMode = 0;
+                if (!Directory.Exists(Str.errorsDirName))
+                    Directory.CreateDirectory(Str.errorsDirName);
+                Properties.Settings.Default.ErrorsFile = Directory.GetCurrentDirectory() + "\\" +
+                    Str.errorsDirName + "\\" + Str.errorsFileName;
+            }
+        }
+
+        static void InitSize()
+        {
+            
+            int w = Console.LargestWindowWidth;
+            int h = Console.LargestWindowHeight;
+            Const.fieldWidth = (int)(w * Const.scale);
+            Const.fieldHeight = (int)(h * Const.scale);
+            Console.SetBufferSize(Const.fieldWidth, Const.fieldHeight);
+            Console.SetWindowSize(Const.fieldWidth, Const.fieldHeight);
+            Const.promptPosition = Const.fieldHeight - 2;
+        }
         static void ShowAndSaveError(Exception e)
         {
             DateTime dt = DateTime.Now;
@@ -202,22 +221,44 @@ namespace fileman
             }
         }
 
-        static void ShowList(List<string> ls, int max, ref int total)
+        static void ShowList(List<string> ls, int max, ref int total, Walls walls)
         {
             for (int i = 0; i < ls.Count; i++)
             {
-                if (total + i == max)
+                if (total == max)
                 {
                     Console.WriteLine("--- Для продолжения нажмите любую клавишу ---");
                     Console.ReadKey();
                     Console.Clear();
+                    walls.Draw();
+                    Console.SetCursorPosition(Const.left, Const.top);
+
                     total = 0;
                 }
+                Console.SetCursorPosition(Const.left, Console.CursorTop);
                 Console.WriteLine(ls[i]);
                 total++;
             }
         }
-        static void ShowDir(System.IO.DirectoryInfo[] dirs, System.IO.FileInfo[] files)
+
+        static void ShowDirectory(DirectoryInfo startPathInfo, Walls walls)
+        {
+            Console.Clear();
+            walls.Draw();
+            Console.SetCursorPosition(Const.left, Const.top);
+            try
+            {
+                System.IO.DirectoryInfo[] subDirs = startPathInfo.GetDirectories();
+                System.IO.FileInfo[] files = startPathInfo.GetFiles("*.*");
+                ShowDir(subDirs, files, walls);
+            }
+            catch (Exception e)
+            {
+                ShowAndSaveError(e);
+            }
+
+        }
+        static void ShowDir(System.IO.DirectoryInfo[] dirs, System.IO.FileInfo[] files, Walls walls)
         {
             List<string> listForShowD = new List<string>();
             List<string> listForShowF = new List<string>();
@@ -259,7 +300,7 @@ namespace fileman
                 }
                 listForShowD.Add(s);
             }
-            ShowList(listForShowD, linesOnPage, ref totalLines);
+            ShowList(listForShowD, linesOnPage, ref totalLines, walls);
             Console.ResetColor();
             for (int i = 0; i < files.Length; i++)
             {
@@ -281,7 +322,7 @@ namespace fileman
                     s += " " + files[i].Attributes.ToString();
                 listForShowF.Add(s);
             }
-            ShowList(listForShowF, linesOnPage, ref totalLines);
+            ShowList(listForShowF, linesOnPage, ref totalLines, walls);
         }
 
     }

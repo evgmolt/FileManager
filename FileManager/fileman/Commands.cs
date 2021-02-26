@@ -37,6 +37,33 @@ namespace fileman
         public static List<string> ParseCommand(string s)
         {
             s = s.Trim();
+            char sep1 = '"';
+            List<string> ls = new List<string>();
+            int p = s.IndexOf(sep1);
+            if (p < 0)
+            {
+               ls.Add(s); //команда без параметров
+                return ls;
+            }
+            List<int> positions = new List<int>();
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == sep1)
+                    positions.Add(i);
+            }
+            if (positions.Count % 2 != 0)
+                return null;
+            for (int i = 0; i < positions.Count / 2; i++)
+            {
+                string ss = s.Substring(positions[2 * i], positions[2 * i + 1] - positions[2 * i] + 1);
+                ls.Add(ss);
+            }
+            return ls;
+        }
+
+        public static List<string> ParseCommandOld(string s)
+        {
+            s = s.Trim();
             char sep = ' ';
             List<string> ls = new List<string>();
             int p = s.IndexOf(sep);
