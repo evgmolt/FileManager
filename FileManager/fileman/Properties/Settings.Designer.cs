@@ -82,5 +82,17 @@ namespace fileman.Properties {
                 this["ErrorsFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HorizLines {
+            get {
+                return ((bool)(this["HorizLines"]));
+            }
+            set {
+                this["HorizLines"] = value;
+            }
+        }
     }
 }

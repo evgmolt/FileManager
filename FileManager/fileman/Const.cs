@@ -12,7 +12,9 @@ namespace fileman
         public static int fieldWidth;
         public static int fieldHeight;
         public static int promptPosition;
+        public static int messPosition;
         public static int top = 1;
         public static int left = 1;
+        public static int maxFileNameLen;
     }
 }

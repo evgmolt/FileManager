@@ -11,29 +11,41 @@ namespace fileman
         char downAndLeftBroder = '\u2514';
         char upAndLeftBroder = '\u250C';
         char upAndRightBroder = '\u2510';
+        char tLeft = '\u251C';
+        char tRight = '\u2524';
 
+        public int messPos;
         List<Figure> wallsList;
         List<Point> anglesList;
         public Walls(int mapWidth, int mapHeight)
         {
+            int mapMessHeight = 3;
+            mapHeight = mapHeight - 2;
+            messPos = mapHeight - mapMessHeight;
             wallsList = new List<Figure>();
             anglesList = new List<Point>();
-            HorizontalLine upLine = new HorizontalLine(0, mapWidth - 2, 0, horizontalBorder);
-            HorizontalLine downLine = new HorizontalLine(0, mapWidth-2, mapHeight - 2, horizontalBorder);
-            VerticalLine leftLine = new VerticalLine(0, 0, mapHeight - 2, verticalBorder);
-            VerticalLine rightLine = new VerticalLine(mapWidth - 2, 0, mapHeight - 2, verticalBorder);
+            HorizontalLine upLine = new HorizontalLine(0, mapWidth, 0, horizontalBorder);
+            HorizontalLine downLine = new HorizontalLine(0, mapWidth, mapHeight, horizontalBorder);
+            VerticalLine leftLine = new VerticalLine(0, 0, mapHeight, verticalBorder);
+            VerticalLine rightLine = new VerticalLine(mapWidth, 0, mapHeight , verticalBorder);
             wallsList.Add(upLine);
             wallsList.Add(downLine);
             wallsList.Add(leftLine);
             wallsList.Add(rightLine);
-            Point downRight = new Point(mapWidth - 2, mapHeight - 2, downAndRightBorder);
+            Point downRight = new Point(mapWidth , mapHeight , downAndRightBorder);
             anglesList.Add(downRight);
-            Point downLeft = new Point(0, mapHeight - 2, downAndLeftBroder);
+            Point downLeft = new Point(0, mapHeight , downAndLeftBroder);
             anglesList.Add(downLeft);
             Point upLeft = new Point(0, 0, upAndLeftBroder);
             anglesList.Add(upLeft);
-            Point upRight = new Point(mapWidth - 2, 0, upAndRightBroder);
+            Point upRight = new Point(mapWidth , 0, upAndRightBroder);
             anglesList.Add(upRight);
+            HorizontalLine messLine = new HorizontalLine(0, mapWidth , messPos, horizontalBorder);
+            wallsList.Add(messLine);
+            Point ptLeft = new Point(0, messPos, tLeft);
+            anglesList.Add(ptLeft);
+            Point ptRight = new Point(mapWidth , messPos, tRight);
+            anglesList.Add(ptRight);
         }
 
         internal void Draw()
