@@ -38,9 +38,9 @@ namespace fileman.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public byte StringsOnPage {
+        public int StringsOnPage {
             get {
-                return ((byte)(this["StringsOnPage"]));
+                return ((int)(this["StringsOnPage"]));
             }
             set {
                 this["StringsOnPage"] = value;
@@ -80,6 +80,18 @@ namespace fileman.Properties {
             }
             set {
                 this["ErrorsFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HorizLines {
+            get {
+                return ((bool)(this["HorizLines"]));
+            }
+            set {
+                this["HorizLines"] = value;
             }
         }
     }
