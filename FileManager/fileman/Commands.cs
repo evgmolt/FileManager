@@ -18,11 +18,14 @@ namespace fileman
             "RM",  //удаление файла
             "RMD",  //удаление папки
             "COPY",//копирование
-            "MOVE",//перемещение
+            "COPYD",//копирование папки
             "VIEW", //режим отображения (1, 2, 3), без параметров - режим 0;
             "SOP", //количество строк на странице, без параметров 10
             "LINES" 
         };
+
+        public static string keyRecurs = "-R";
+        public static string keyOverwrite = "-W";
 
         public static int GetCommandNum(string s)
         {
@@ -44,7 +47,7 @@ namespace fileman
             char sep1 = '"';
             List<string> ls = new List<string>();
             int p = s.IndexOf(sep1);
-            if (p < 0)
+            if (p <= 0)
             {
                 p = s.IndexOf(sep);
                 if (p > 0)
