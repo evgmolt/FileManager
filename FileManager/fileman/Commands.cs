@@ -8,7 +8,7 @@ namespace fileman
 {
     public static class Commands
     {
-        public static byte numOfViewMode = 4;
+        public static byte numOfViewMode = 5;
         public static string[] Cmd =
         {
             "?",
@@ -21,7 +21,10 @@ namespace fileman
             "COPYD",//копирование папки
             "VIEW", //режим отображения (1, 2, 3), без параметров - режим 0;
             "SOP", //количество строк на странице, без параметров 10
-            "LINES" 
+            "LINES",
+            "DIRSIZE",// размер папки
+            "DI",// Drive info, без параметров - список дисков
+            "LS"//отображение содержимого папки без смены текущей
         };
 
         public static string keyRecurs = "-R";
@@ -73,22 +76,6 @@ namespace fileman
             return ls;
         }
 
-        public static List<string> ParseCommandOld(string s)
-        {
-            s = s.Trim();
-            char sep = ' ';
-            List<string> ls = new List<string>();
-            int p = s.IndexOf(sep);
-            while (p != -1) 
-            {
-                string ss = s.Substring(0, p);
-                ls.Add(ss);
-                s = s.Substring(p + 1);
-                s = s.Trim();
-                p = s.IndexOf(sep);
-            };
-            ls.Add(s);
-            return ls;
-        }
+
     }
 }
