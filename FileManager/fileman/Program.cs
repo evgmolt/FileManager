@@ -120,7 +120,29 @@ namespace fileman
                             ShowAndSaveError(Str.syntaxErr, false);
                             break;
                         }
-                        FileCopy(enters[1], enters[2]);// нет параметра
+                        if (enters[1].IndexOf("*") >= 0)
+                        {
+                            if (!Directory.Exists(enters[2]))
+                            {
+                               try
+                               {
+                                    Directory.CreateDirectory(enters[2]);
+                               }
+                               catch (Exception e)
+                               {
+                                    ShowAndSaveError(e.Message, true);
+                                }
+                            }
+                            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), enters[1]);
+                            foreach (string s in files)
+                            {
+                                string fname = System.IO.Path.GetFileName(s);
+                                string destFile = System.IO.Path.Combine(enters[2], fname);
+                                FileCopy(s, destFile);
+                            }
+                        }
+                        else
+                            FileCopy(enters[1], enters[2]);
                         break;
                     case 7://COPYD копирование папки
                         bool recurse = enters[1].ToUpper() == Commands.keyRecurs;
@@ -149,7 +171,7 @@ namespace fileman
                         bool err = false;
                         if (Byte.TryParse(enters[1], out res))
                         {
-                            if (res > 0 && res < Commands.numOfViewMode)
+                            if (res > 0 && res < Commands.numOfViewMode + 1)
                             {
                                 Properties.Settings.Default.ViewMode = res;
                             }
@@ -195,8 +217,40 @@ namespace fileman
                                 Console.WriteLine(Str.syntaxErr);
                             }
                             break;
-                        case 10:
+                        case 10://Lines 
                             Properties.Settings.Default.HorizLines = !Properties.Settings.Default.HorizLines;
+                            break;
+                        case 11://DirSize 
+                            if (enters.Count != 2)
+                            {
+                                ShowAndSaveError(Str.syntaxErr, false);
+                                break;
+                            }
+                            long size;
+                            try
+                            {
+                                size = DirSize(new DirectoryInfo(enters[1]));
+                                ShowInfo(enters[1] + " : " + size.ToString());
+                            }
+                            catch (Exception e)
+                            {
+                                ShowAndSaveError(e.Message, true);
+                            }
+                            break;
+                        case 12: //DI информация о диске
+                            if (enters.Count == 1)
+                            {
+                                ShowDrives(walls);
+                            }
+                            break;
+                        case 13: //отображение содержимого папки без смены текущей
+                            if (enters.Count != 2)
+                            {
+                                ShowAndSaveError(Str.syntaxErr, false);
+                                break;
+                            }
+                            ShowDirectory(new DirectoryInfo(enters[1]), walls);
+                            ShowInfo("");
                             break;
                         default:
                             Console.Clear();
@@ -212,6 +266,39 @@ namespace fileman
             while (true);
         }
 
+        static void ShowDrives(Walls walls)
+        {
+            Console.Clear();
+            walls.Draw();
+            try
+            {
+                Console.SetCursorPosition(Const.left, Const.top);
+                Console.WriteLine(Str.driveInfoTitle);
+                Console.SetCursorPosition(Const.left, Console.CursorTop);
+                DriveInfo[] drives = DriveInfo.GetDrives();
+                foreach (DriveInfo d in drives)
+                {
+                    string s = d.Name + "\t" + d.DriveType;
+                    if (!d.IsReady)
+                    {
+                        s +=  "\t" + Str.driveNotReady;
+                    }
+                    else
+                    {
+                        s += "\t" + d.DriveFormat + "\t" + d.VolumeLabel + "\t" + 
+                            Str.GetSizeString(d.TotalSize) + "\t" + 
+                            Str.GetSizeString(d.TotalFreeSpace);
+                    }
+                    Console.WriteLine(s);
+                    Console.SetCursorPosition(Const.left, Console.CursorTop);
+                }
+                ShowInfo("");
+            }
+            catch (Exception e)
+            {
+                ShowAndSaveError(e.Message, true);
+            }
+        }
         static void FileCopy(string sourceFile, string destFile)
         {
             if (!File.Exists(sourceFile))
@@ -225,18 +312,17 @@ namespace fileman
                 Console.WriteLine(destFile + Str.fileExist);
                 Console.SetCursorPosition(2, Const.messPosition + 2);
                 ConsoleKeyInfo cki = Console.ReadKey();
-                if (cki.Key == ConsoleKey.Y)
-                {
-                    try
-                    {
-                        File.Copy(sourceFile, destFile, true);
-                    }
-                    catch (Exception e)
-                    {
-                        ShowAndSaveError(e.Message, true);
-                    }
-                }
+                if (cki.Key != ConsoleKey.Y)
+                    return;
             }
+                try
+                {
+                    File.Copy(sourceFile, destFile, true);
+                }
+                catch (Exception e)
+                {
+                    ShowAndSaveError(e.Message, true);
+                }
         }
 
         static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
@@ -314,6 +400,18 @@ namespace fileman
                 DeleteMenu(sysMenu, SC_SIZE, MF_BYCOMMAND);
             }
         }
+
+        static void ShowInfo(string mess)
+        {
+            ConsoleColor defColor = Console.ForegroundColor;
+            Console.SetCursorPosition(2, Const.messPosition + 1);
+            Console.WriteLine(mess);
+            Console.SetCursorPosition(2, Const.messPosition + 2);
+            Console.WriteLine(Str.pressAnyKey);
+            Console.ReadKey();
+        }
+
+
         static void ShowAndSaveError(string mess, bool save )
         {
             ConsoleColor defColor = Console.ForegroundColor;
@@ -336,6 +434,22 @@ namespace fileman
             Console.ReadKey();
         }
 
+        public static long DirSize(DirectoryInfo d)
+        {
+            long size = 0;
+            FileInfo[] files = d.GetFiles();
+            foreach (FileInfo fi in files)
+            {
+                size += fi.Length;
+            }
+            DirectoryInfo[] dirs = d.GetDirectories();
+            foreach (DirectoryInfo di in dirs)
+            {
+                size += DirSize(di);
+            }
+            return size;
+        }
+
         static void ShowHelp()
         {
             try
@@ -354,8 +468,9 @@ namespace fileman
             }
         }
 
-        static void ShowList(ref int pageNum, int totalPages, List<string> ls, int max, ref int total, Walls walls)
+        static void ShowList(int pageNum, int totalPages, List<string> ls, List<bool> listIsDir, int max, Walls walls)
         {
+            int total = 0;
             for (int i = 0; i < ls.Count; i++)
             {
                 if (total == max)
@@ -372,25 +487,72 @@ namespace fileman
                     Console.Clear();
                     walls.Draw();
                     Console.SetCursorPosition(Const.left, Const.top);
+                    Console.WriteLine(Str.GetTitle());
+                    Console.SetCursorPosition(Const.left, Console.CursorTop);
 
-                    total = 0;
+                    total = 1;
                 }
                 Console.SetCursorPosition(Const.left, Console.CursorTop);
+                if (listIsDir[i])
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                };
                 Console.WriteLine(ls[i]);
+                Console.ResetColor();
                 total++;
             }
         }
+
 
         static void ShowDirectory(DirectoryInfo startPathInfo, Walls walls)
         {
             Console.Clear();
             walls.Draw();
             Console.SetCursorPosition(Const.left, Const.top);
+            Console.WriteLine(Str.GetTitle());
+            int linesOnPage = Properties.Settings.Default.StringsOnPage;
+            List<bool> listIsDir = new List<bool>();
+            List<string> listForShow = new List<string>();
             try
             {
                 System.IO.DirectoryInfo[] subDirs = startPathInfo.GetDirectories();
                 System.IO.FileInfo[] files = startPathInfo.GetFiles("*.*");
-                ShowDir(subDirs, files, walls);
+                for (int i = 0; i < subDirs.Count(); i++)
+                {
+                    listForShow.Add(GetDirFileString(0, subDirs[i]));
+                    listIsDir.Add(true);
+                    System.IO.DirectoryInfo[] subDirs2;
+                    try
+                    {
+                        subDirs2 = subDirs[i].GetDirectories();
+                    }
+                    catch (Exception)
+                    {
+                        subDirs2 = new System.IO.DirectoryInfo[0];
+                    }
+                    System.IO.FileInfo[] files2;
+                    try
+                    {
+                        files2 = subDirs[i].GetFiles("*.*");
+                    }
+                    catch (Exception)
+                    {
+                        files2 = new System.IO.FileInfo[0];
+                    }
+
+                    FillDirList(1, listForShow, listIsDir, subDirs2, files2, walls);
+                }
+                for (int i = 0; i < files.Length; i++)
+                {
+                    listForShow.Add(GetDirFileString(0, files[i]));
+                    listIsDir.Add(false);
+                }
+                int totalPages = 1 + listForShow.Count / linesOnPage;
+                if ((listForShow.Count + listForShow.Count) % linesOnPage != 0)
+                    totalPages++;
+                Console.ForegroundColor = ConsoleColor.White;
+                int pNum = 0;
+                ShowList(pNum, totalPages, listForShow, listIsDir, linesOnPage, walls);
             }
             catch (Exception e)
             {
@@ -399,126 +561,87 @@ namespace fileman
 
         }
 
-        static string GetFileAttributesString(System.IO.FileAttributes fa)
+        static string GetDirFileString(int level, System.IO.FileSystemInfo dirfile)
         {
-            string s = string.Empty;
-            if ((fa & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+            //char l0 = '+';
+            char l1 = '\u251C';// ├
+            char l2 = '\u2500';// ─
+            //char l02 = '\u2502';// │
+            char l3 = '\u2514'; //└
+            string indent;
+            if (dirfile.GetType() == typeof(System.IO.FileInfo))
+                indent = " ";
+            else
+                indent = l1.ToString();
+            string s;
+            s = level == 0 ? l3.ToString() : l2.ToString();
+            indent += s;
+            indent = level == 0 ? "" : "  ";
+            char horizLine = Properties.Settings.Default.HorizLines ? '-' : ' ';
+            int mode = Properties.Settings.Default.ViewMode;
+            int maxFileNameLen = Const.GetMaxFileNameLen(mode);
+            s = indent + dirfile.Name;
+            if (s.Length > maxFileNameLen)
+                s = s.Substring(0, maxFileNameLen - 3) + "-->";
+            s = s.PadRight(maxFileNameLen, horizLine);//колонка 1
+            if (mode > 0)
             {
-                s += "R";
+                string s1;
+                if (dirfile.GetType() == typeof(System.IO.FileInfo))
+                {
+                    System.IO.FileInfo f = (System.IO.FileInfo)dirfile;
+                    s1 = Str.GetSizeString(f.Length);
+                }
+                else
+                    s1 = Str.directory;
+                s1 = s1.PadRight(Const.sizeStringLen); //колонка 2
+                s += s1;
             }
-            else s += "-";
-            if ((fa & FileAttributes.Archive) == FileAttributes.Archive)
+            if (mode > 1)
             {
-                s += "A";
+                string s1 = Str.GetFileAttributesString(dirfile.Attributes);//колонка 4
+                s1 = s1.PadRight(Const.attrStringLen); //колонка 3
+                s += s1;
             }
-            else s += "-";
-            if ((fa & FileAttributes.Hidden) == FileAttributes.Hidden)
+            if (mode > 2)
             {
-                s += "H";
+                string s1 = dirfile.CreationTime.ToString("MM/dd/yyyy HH:mm:ss");
+                s1 = s1.PadRight(Const.timeStringLen); //колонка 4
+                s += s1;
             }
-            else s += "-";
-            if ((fa & FileAttributes.System) == FileAttributes.System)
+            if (mode > 3)
             {
-                s += "S";
+                string s1 = dirfile.LastAccessTime.ToString("MM/dd/yyyy HH:mm:ss");
+                s1 = s1.PadRight(Const.timeStringLen); //колонка 5
+                s += s1;
             }
-            else s += "-";
+            if (mode > 4)
+            {
+                string s1 = dirfile.LastWriteTime.ToString("MM/dd/yyyy HH:mm:ss");
+                s1 = s1.PadRight(Const.timeStringLen); //колонка 6
+                s += s1;
+            }
             return s;
         }
-        static void ShowDir(System.IO.DirectoryInfo[] dirs, System.IO.FileInfo[] files, Walls walls)
+
+        static void FillDirList(int level, List<string> listForShow, List<bool> listIsDir, System.IO.DirectoryInfo[] dirs, System.IO.FileInfo[] files, Walls walls)
         {
-            char horizLine;
-            int attrStringLen = 5;
-            string dir = "Папка";
-            if (Properties.Settings.Default.HorizLines)
-                horizLine = '-';
-            else
-                horizLine = ' ';
-            List<string> listForShowD = new List<string>();
-            List<string> listForShowF = new List<string>();
             int mode = Properties.Settings.Default.ViewMode;
-            int totalLines = 0;
             int linesOnPage = Properties.Settings.Default.StringsOnPage;
-            int[] len = new int[4]; //ширина столбцов
             for (int i = 0; i < dirs.Length; i++)
             {
-                len[0] = Math.Max(len[0], dirs[i].Name.Length);
-                len[1] = Math.Max(len[1], dirs[i].LastWriteTime.ToString().Length);
-            }
-            len[2] = dir.Length;
-            for (int i = 0; i < files.Length; i++)
-            {
-                len[0] = Math.Max(len[0], files[i].Name.Length);
-                len[1] = Math.Max(len[1], files[i].LastWriteTime.ToString().Length);
-                len[2] = Math.Max(len[2], files[i].Length.ToString().Length);
-            }
-            int maxFileNameLen = Const.fieldWidth - 5;
-            if (mode > 0) maxFileNameLen -= len[1];
-            if (mode > 1) maxFileNameLen -= len[2];
-            if (mode > 2) maxFileNameLen -= attrStringLen;
-            /*            for (int i = 0; i < mode; i++)
-                        {
-                            if (i > 0)
-                            {
-                                maxFileNameLen -= len[i];
-                            }
-                        }*/
-            len[0] = maxFileNameLen;
-//            len[0] = Math.Min(len[0], maxFileNameLen);
-            for (int i = 0; i < dirs.Length; i++)
-            {
-                string s = dirs[i].Name;
-                if (s.Length > len[0])
-                    s = s.Substring(0, len[0] - 3) + "-->";
-                s = s.PadRight(len[0] + 1, horizLine);//колонка 1
-                if (mode > 0)
-                {
-                    string s1 = dirs[i].LastWriteTime.ToString();
-                    s1 = s1.PadRight(len[1] + 1); //колонка 2
-                    s += s1;
-                }
-                if (mode > 1)
-                {
-                    string s1 = Str.directory;
-                    s1 = s1.PadRight(len[2] + 1); //колонка 3
-                    s += s1;
-                }
-                if (mode > 2)
-                {
-                    s += " " + GetFileAttributesString(dirs[i].Attributes);//колонка 4
-                }
-                listForShowD.Add(s);
+                listForShow.Add(GetDirFileString(level, dirs[i]));
+                listIsDir.Add(true);//Это папка
             }
             for (int i = 0; i < files.Length; i++)
             {
-                string s = files[i].Name;
-                if (s.Length > len[0])
-                    s = s.Substring(0, len[0] - 3) + "-->";
-                s = s.PadRight(len[0] + 1, horizLine); //колонка 1
-                if (mode > 0)
-                {
-                    string s1 = files[i].LastWriteTime.ToString();
-                    s1 = s1.PadRight(len[1] + 1); //колонка 2
-                    s += s1;
-                }
-                if (mode > 1)
-                {
-                    string s1 = files[i].Length.ToString(); ;
-                    s1 = s1.PadRight(len[2] + 1); //колонка 3
-                    s += s1;
-                }
-                if (mode > 2)
-                    s += " " + GetFileAttributesString(files[i].Attributes);
-                listForShowF.Add(s);
+                listForShow.Add(GetDirFileString(level, files[i]));
+                listIsDir.Add(false);//Это файл
             }
-            int totalPages = (listForShowD.Count + listForShowF.Count) / linesOnPage;
-            if ((listForShowD.Count + listForShowF.Count) % linesOnPage != 0)
-                totalPages++;
-            Console.ForegroundColor = ConsoleColor.White;
-            int pNum = 0;
-            ShowList(ref pNum, totalPages, listForShowD, linesOnPage, ref totalLines, walls);
-            Console.ResetColor();
-            ShowList(ref pNum, totalPages, listForShowF, linesOnPage, ref totalLines, walls);
         }
+
+
+
 
     }
 }
