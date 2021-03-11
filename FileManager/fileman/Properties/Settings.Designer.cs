@@ -94,5 +94,17 @@ namespace fileman.Properties {
                 this["HorizLines"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Level {
+            get {
+                return ((bool)(this["Level"]));
+            }
+            set {
+                this["Level"] = value;
+            }
+        }
     }
 }

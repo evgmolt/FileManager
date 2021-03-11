@@ -22,7 +22,7 @@ namespace fileman
         public static readonly string errorsDirName = "errors";
         public static readonly string errorsFileName = "exception.txt";
         public static readonly string driveNotReady = "Устройство не готово";
-        public static readonly string driveInfoTitle = "Диск\tТип\tФормат\tМетка\tРазмер\t\tСвободно";
+        public static readonly string[] driveInfoTitle = { "Диск", "Тип", "Формат", "Метка", "Размер", "Свободно", "Доступно" };
 
         public static readonly string tName = "ИМЯ";
         public static readonly string tSize = "РАЗМЕР";
@@ -30,6 +30,11 @@ namespace fileman
         public static readonly string tCreation = "СОЗДАН";
         public static readonly string tAccess = "ДОСТУП";
         public static readonly string tWrite = "ИЗМЕНЕН";
+        public static readonly string dateTimePatt = "MM/dd/yyyy HH:mm:ss";
+        public static readonly string appTitle = "File manager FILEMAN v.1.0 2021";
+        public static readonly string prompt = "> ";
+        public static readonly string tooLongString = "-->";
+
 
         public static string GetSizeString(Int64 bytes)
         {
@@ -111,6 +116,23 @@ namespace fileman
             else s += "-";
             return s;
         }
+
+        public static int[] GetColumnsWidth(string[,] matrix)
+        {
+            int[] res = new int[matrix.GetLength(0)];
+            int numOfStrings = matrix.GetLength(1);
+            for (int k = 0; k < res.Length; k++)
+            {
+                int len = 0;
+                for (int i = 0; i < numOfStrings; i++)
+                {
+                    len = Math.Max(len, matrix[k, i].Length);
+                }
+                res[k] = len;
+            }
+            return res;
+        }
+
 
 
     }
