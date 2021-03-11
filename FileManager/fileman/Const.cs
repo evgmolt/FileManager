@@ -19,6 +19,7 @@ namespace fileman
         public static int timeStringLen = 22;
         public static int sizeStringLen = 11;
         public static int attrStringLen = 10;
+        public static int numOfDrivesParameters = 7;
 
         public static int GetMaxFileNameLen(int mode)
         {
