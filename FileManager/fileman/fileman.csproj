@@ -72,7 +72,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Str.cs" />
-    <Compile Include="Traverse.cs" />
     <Compile Include="VerticalLine.cs" />
     <Compile Include="Walls.cs" />
   </ItemGroup>

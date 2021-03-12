@@ -48,7 +48,6 @@ namespace fileman
                 switch (Commands.GetCommandNum(enters[0]))
                 {
                     case 0:
-                        Console.Clear();
                         walls.Draw();
                         ShowHelp();
                         ShowAndSaveError("", false);
@@ -71,7 +70,7 @@ namespace fileman
                         }
                         else
                         {
-                                ShowAndSaveError(enters[1] + Str.dirExist, false);
+                            ShowAndSaveError(enters[1] + Str.dirExist, false);
                         }
                         break;
                     case 3: //смена текущей папки
@@ -95,7 +94,7 @@ namespace fileman
                         {
                             File.Delete(enters[1]);
                         }
-                        catch (Exception e)
+                        catch (Exception e) 
                         {
                             ShowAndSaveError(e.Message, true);
                         }
@@ -256,15 +255,16 @@ namespace fileman
                         case 14://Уровень отображения дерева
                             Properties.Settings.Default.Level = !Properties.Settings.Default.Level;
                             break;
+                        case 15://Цвет фона
+                            Properties.Settings.Default.BColor = !Properties.Settings.Default.BColor;
+                            Const.backColor = Properties.Settings.Default.BColor ? ConsoleColor.Black : ConsoleColor.Blue;
+                            break;
                         default:
-                            Console.Clear();
                             walls.Draw();
                             ShowHelp();
                             ShowAndSaveError(enters[0] + Str.notCommand, false);
                             break;
                 }
-                Console.Clear();
-
                 Console.WriteLine();
             } 
             while (true);
@@ -320,7 +320,6 @@ namespace fileman
 
         static void ShowDrives(Walls walls)
         {
-            Console.Clear();
             walls.Draw();
             string[,] dInfo = GetDrivesInfo();
             if (dInfo == null)
@@ -411,12 +410,12 @@ namespace fileman
             if (Properties.Settings.Default.DefaultPath != String.Empty)
             {
                 Directory.SetCurrentDirectory(Properties.Settings.Default.DefaultPath);
+                Const.backColor = Properties.Settings.Default.BColor ? ConsoleColor.Black : ConsoleColor.Blue;
             }
             else
             {
                 Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
                 Properties.Settings.Default.HelpFile = Path.Combine(Directory.GetCurrentDirectory(), Str.helpFileName);
-                Properties.Settings.Default.ViewMode = 0;
                 if (!Directory.Exists(Str.errorsDirName))
                     Directory.CreateDirectory(Str.errorsDirName);
                 Properties.Settings.Default.ErrorsFile = Path.Combine(Directory.GetCurrentDirectory(),
@@ -450,7 +449,6 @@ namespace fileman
 
         static void ShowInfo(string mess)
         {
-            ConsoleColor defColor = Console.ForegroundColor;
             Console.SetCursorPosition(2, Const.messPosition + 1);
             Console.WriteLine(mess);
             Console.SetCursorPosition(2, Const.messPosition + 2);
@@ -522,15 +520,18 @@ namespace fileman
                 if (total == max)
                 {
                     pageNum++;
-                    ConsoleColor color = Console.ForegroundColor;
-                    Console.ResetColor();
                     Console.SetCursorPosition(2, Const.messPosition + 1);
                     Console.WriteLine($"Страница {pageNum} из {totalPages}");
                     Console.SetCursorPosition(2, Const.messPosition + 2);
                     Console.WriteLine(Str.pressAnyKey);
-                    Console.ReadKey();
-                    Console.ForegroundColor  = color;
-                    Console.Clear();
+                    Console.SetCursorPosition(2, Const.messPosition + 2);
+                    ConsoleKeyInfo cki = Console.ReadKey();
+                    if (cki.Key == ConsoleKey.Escape)
+                    {
+                        Console.SetCursorPosition(2, Const.messPosition + 2);
+                        Console.WriteLine(Str.viewStopped);
+                        return;
+                    }
                     walls.Draw();
                     Console.SetCursorPosition(Const.left, Const.top);
                     Console.WriteLine(Str.GetTitle());
@@ -544,19 +545,18 @@ namespace fileman
                     Console.ForegroundColor = ConsoleColor.White;
                 };
                 Console.WriteLine(ls[i]);
-                Console.ResetColor();
+                Console.ForegroundColor= ConsoleColor.Gray;
                 total++;
             }
         }
 
         static void ShowDirectory(DirectoryInfo startPathInfo, Walls walls)
         {
-            Console.Clear();
             walls.Draw();
             Console.SetCursorPosition(Const.left, Const.top);
             Console.WriteLine(Str.GetTitle());
             int linesOnPage = Properties.Settings.Default.StringsOnPage;
-            List<bool> listIsDir = new List<bool>();
+            List<bool> listIsDir = new List<bool>();//Признак папки для выделения цветом
             List<string> listForShow = new List<string>();
             try
             {
@@ -638,7 +638,7 @@ namespace fileman
             }
             if (mode > 1)
             {
-                string s1 = Str.GetFileAttributesString(dirfile.Attributes);//колонка 4
+                string s1 = Str.GetFileAttributesString(dirfile.Attributes);
                 s1 = s1.PadRight(Const.attrStringLen); //колонка 3
                 s += s1;
             }
