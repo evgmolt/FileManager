@@ -17,7 +17,8 @@ namespace fileman
         public static readonly string fileNotExist = " - файл не найден";
         public static readonly string fileExist = " - файл уже существует. Переписать? (Y/N)";
 
-        public static readonly string pressAnyKey = "Нажмите любую клавишу для продолжения";
+        public static readonly string pressAnyKey = "Нажмите любую клавишу для продолжения, ESC для остановки";
+        public static readonly string viewStopped = "Отображение прервано                                    ";
         public static readonly string helpFileName = "readme.txt";
         public static readonly string errorsDirName = "errors";
         public static readonly string errorsFileName = "exception.txt";

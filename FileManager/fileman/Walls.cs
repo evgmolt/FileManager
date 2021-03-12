@@ -50,6 +50,8 @@ namespace fileman
 
         internal void Draw()
         {
+            Console.BackgroundColor = Const.backColor;
+            Console.Clear();
             foreach(var wall in wallsList)
             {
                 wall.Draw();

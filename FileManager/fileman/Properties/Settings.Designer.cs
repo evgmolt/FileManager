@@ -61,7 +61,7 @@ namespace fileman.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
         public byte ViewMode {
             get {
                 return ((byte)(this["ViewMode"]));
@@ -97,13 +97,25 @@ namespace fileman.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool Level {
             get {
                 return ((bool)(this["Level"]));
             }
             set {
                 this["Level"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool BColor {
+            get {
+                return ((bool)(this["BColor"]));
+            }
+            set {
+                this["BColor"] = value;
             }
         }
     }
