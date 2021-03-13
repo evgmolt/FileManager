@@ -16,8 +16,10 @@ namespace fileman
         public static readonly string directory = "Папка";
         public static readonly string fileNotExist = " - файл не найден";
         public static readonly string fileExist = " - файл уже существует. Переписать? (Y/N)";
+        public static readonly string dirNameError = "Ошибка ввода имен папок";
 
-        public static readonly string pressAnyKey = "Нажмите любую клавишу для продолжения, ESC для остановки";
+        public static readonly string pressAnyKeyEsc = "Нажмите любую клавишу для продолжения, ESC для остановки";
+        public static readonly string pressAnyKey = "Нажмите любую клавишу для продолжения";
         public static readonly string viewStopped = "Отображение прервано                                    ";
         public static readonly string helpFileName = "readme.txt";
         public static readonly string errorsDirName = "errors";

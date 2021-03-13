@@ -120,31 +120,18 @@ namespace fileman
                             ShowAndSaveError(Str.syntaxErr, false);
                             break;
                         }
-                        if (enters[1].IndexOf("*") >= 0)
-                        {
-                            if (!Directory.Exists(enters[2]))
-                            {
-                               try
-                               {
-                                    Directory.CreateDirectory(enters[2]);
-                               }
-                               catch (Exception e)
-                               {
-                                    ShowAndSaveError(e.Message, true);
-                                }
-                            }
-                            string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), enters[1]);
-                            foreach (string s in files)
-                            {
-                                string fname = System.IO.Path.GetFileName(s);
-                                string destFile = System.IO.Path.Combine(enters[2], fname);
-                                FileCopy(s, destFile);
-                            }
-                        }
-                        else
-                            FileCopy(enters[1], enters[2]);
+                        FileCopyOrMove(false, enters[1], enters[2]);
                         break;
-                    case 7://COPYD копирование папки
+                    case 7://перемещение файла(-ов)
+                        if (enters.Count < 3)
+                        {
+                            ShowAndSaveError(Str.syntaxErr, false);
+                            break;
+                        }
+                        FileCopyOrMove(true, enters[1], enters[2]);
+                        break;
+
+                    case 8://COPYD копирование папки
                         bool recurse = enters[1].ToUpper() == Commands.keyRecurs;
                         if (recurse)
                         {
@@ -161,7 +148,30 @@ namespace fileman
                                     ShowAndSaveError(Str.syntaxErr, false);
                         }
                         break;
-                    case 8: //режим отображения
+                        case 9://перемещение папки
+                            if (enters.Count < 3)
+                            {
+                                ShowAndSaveError(Str.syntaxErr, false);
+                                break;
+                            }
+                            DirectoryInfo dirInfo = new DirectoryInfo(enters[1]);
+                            if (dirInfo.Exists && Directory.Exists(enters[2]) == false)
+                            {
+                                try
+                                {
+                                    dirInfo.MoveTo(enters[2]);
+                                }
+                                catch (Exception e)
+                                {
+                                    ShowAndSaveError(e.Message, true);
+                                }
+                            }
+                            else
+                            {
+                                ShowAndSaveError(Str.dirNameError, false);
+                            }
+                            break;
+                        case 10: //режим отображения
                         if (enters.Count == 1)
                         {
                             Properties.Settings.Default.ViewMode = 0;
@@ -189,7 +199,7 @@ namespace fileman
                             Console.WriteLine(Str.syntaxErr);
                         }
                         break;
-                        case 9: //количество строк на странице, без параметров 10
+                        case 11: //количество строк на странице, без параметров 10
                             if (enters.Count == 1)
                             {
                                 Properties.Settings.Default.StringsOnPage = 10;
@@ -217,10 +227,10 @@ namespace fileman
                                 Console.WriteLine(Str.syntaxErr);
                             }
                             break;
-                        case 10://Lines 
+                        case 12://Lines 
                             Properties.Settings.Default.HorizLines = !Properties.Settings.Default.HorizLines;
                             break;
-                        case 11://DirSize 
+                        case 13://DirSize 
                             if (enters.Count != 2)
                             {
                                 ShowAndSaveError(Str.syntaxErr, false);
@@ -237,13 +247,13 @@ namespace fileman
                                 ShowAndSaveError(e.Message, true);
                             }
                             break;
-                        case 12: //DI информация о диске
+                        case 14: //DI информация о диске
                             if (enters.Count == 1)
                             {
                                 ShowDrives(walls);
                             }
                             break;
-                        case 13: //отображение содержимого папки без смены текущей
+                        case 15: //отображение содержимого папки без смены текущей
                             if (enters.Count != 2)
                             {
                                 ShowAndSaveError(Str.syntaxErr, false);
@@ -252,10 +262,10 @@ namespace fileman
                             ShowDirectory(new DirectoryInfo(enters[1]), walls);
                             ShowInfo("");
                             break;
-                        case 14://Уровень отображения дерева
+                        case 16://Уровень отображения дерева
                             Properties.Settings.Default.Level = !Properties.Settings.Default.Level;
                             break;
-                        case 15://Цвет фона
+                        case 17://Цвет фона
                             Properties.Settings.Default.BColor = !Properties.Settings.Default.BColor;
                             Const.backColor = Properties.Settings.Default.BColor ? ConsoleColor.Black : ConsoleColor.Blue;
                             break;
@@ -345,7 +355,34 @@ namespace fileman
             ShowInfo("");
         }
 
-        static void FileCopy(string sourceFile, string destFile)
+        static void FileCopyOrMove(bool move, string source, string dest)
+        {
+            if (source.IndexOf("*") >= 0)
+            {
+                if (!Directory.Exists(dest))
+                {
+                    try
+                    {
+                        Directory.CreateDirectory(dest);
+                    }
+                    catch (Exception e)
+                    {
+                        ShowAndSaveError(e.Message, true);
+                    }
+                }
+                string[] files = Directory.GetFiles(Directory.GetCurrentDirectory(), source);
+                foreach (string s in files)
+                {
+                    string fname = System.IO.Path.GetFileName(s);
+                    string destFile = System.IO.Path.Combine(dest, fname);
+                    FileCopyOrMovePrim(move, s, destFile);
+                }
+            }
+            else
+                FileCopyOrMovePrim(move, source, dest);
+
+        }
+        static void FileCopyOrMovePrim(bool move, string sourceFile, string destFile)
         {
             if (!File.Exists(sourceFile))
             {
@@ -363,7 +400,14 @@ namespace fileman
             }
             try
             {
-                File.Copy(sourceFile, destFile, true);
+                if (move)
+                {
+                    File.Move(sourceFile, destFile);
+                }
+                else
+                {
+                    File.Copy(sourceFile, destFile, true);
+                }
             }
             catch (Exception e)
             {
@@ -523,7 +567,7 @@ namespace fileman
                     Console.SetCursorPosition(2, Const.messPosition + 1);
                     Console.WriteLine($"Страница {pageNum} из {totalPages}");
                     Console.SetCursorPosition(2, Const.messPosition + 2);
-                    Console.WriteLine(Str.pressAnyKey);
+                    Console.WriteLine(Str.pressAnyKeyEsc);
                     Console.SetCursorPosition(2, Const.messPosition + 2);
                     ConsoleKeyInfo cki = Console.ReadKey();
                     if (cki.Key == ConsoleKey.Escape)

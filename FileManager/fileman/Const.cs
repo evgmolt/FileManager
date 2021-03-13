@@ -9,7 +9,7 @@ namespace fileman
     public static class Const
     {
         public static ConsoleColor backColor;
-        public static double scale = 0.6;
+        public static double scale = 0.7;
         public static int fieldWidth;
         public static int fieldHeight;
         public static int promptPosition;
