@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace fileman
+namespace fileman2
 {
     public class Point
     {

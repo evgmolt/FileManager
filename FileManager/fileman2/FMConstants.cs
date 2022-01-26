@@ -1,9 +1,15 @@
 ﻿using System;
 
-namespace fileman
+namespace fileman2
 {
-    public static class FMConstants
+    internal static class FMConstants
     {
+        public const int MF_BYCOMMAND = 0x00000000;
+        public const int SC_CLOSE = 0xF060;
+        public const int SC_MINIMIZE = 0xF020;
+        public const int SC_MAXIMIZE = 0xF030;
+        public const int SC_SIZE = 0xF000;
+
         public static ConsoleColor backColor;
         public static double scale = 0.7;
         public static int fieldWidth;
@@ -17,8 +23,7 @@ namespace fileman
         public static int sizeStringLen = 11;
         public static int attrStringLen = 10;
         public static int numOfDrivesParameters = 7;
-
-        public static string reportConfigFileName = "reportconfig.txt";
+        public static byte numOfViewMode = 5;
 
         public static int nName = 0;
         public static int nType = 1;
@@ -38,6 +43,5 @@ namespace fileman
             if (mode > 4) len -= FMConstants.timeStringLen;
             return len;
         }
-
     }
 }

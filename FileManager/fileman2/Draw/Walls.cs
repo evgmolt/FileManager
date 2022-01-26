@@ -1,27 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace fileman
+namespace fileman2
 {
     class Walls
     {
-        char horizontalBorder = '\u2500';
-        char verticalBorder = '\u2502';
-        char downAndRightBorder = '\u2518';
-        char downAndLeftBroder = '\u2514';
-        char upAndLeftBroder = '\u250C';
-        char upAndRightBroder = '\u2510';
-        char tLeft = '\u251C';
-        char tRight = '\u2524';
+        readonly char horizontalBorder = '\u2500';
+        readonly char verticalBorder = '\u2502';
+        readonly char downAndRightBorder = '\u2518';
+        readonly char downAndLeftBroder = '\u2514';
+        readonly char upAndLeftBroder = '\u250C';
+        readonly char upAndRightBroder = '\u2510';
+        readonly char tLeft = '\u251C';
+        readonly char tRight = '\u2524';
 
         public int messPos;
         List<Figure> wallsList;
         List<Point> anglesList;
-        public Walls(int mapWidth, int mapHeight)
+        public Walls()
         {
+            int mapWidth = FMConstants.fieldWidth - 1;
+            int mapHeight = FMConstants.fieldHeight - 1;
             int mapMessHeight = 3;
             mapHeight = mapHeight - 2;
             messPos = mapHeight - mapMessHeight;
+            FMConstants.messPosition = messPos;
+
             wallsList = new List<Figure>();
             anglesList = new List<Point>();
             HorizontalLine upLine = new HorizontalLine(0, mapWidth, 0, horizontalBorder);
@@ -48,7 +52,7 @@ namespace fileman
             anglesList.Add(ptRight);
         }
 
-        internal void Draw()
+        public void Draw()
         {
             Console.BackgroundColor = FMConstants.backColor;
             Console.Clear();

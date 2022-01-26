@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TemplateEngine.Docx;
 
 namespace fileman
@@ -66,7 +63,7 @@ namespace fileman
             }
             catch (Exception)
             {
-                   return false;
+                return false;
             }
             return true;
         }

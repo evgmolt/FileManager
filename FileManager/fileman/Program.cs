@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace fileman
 {
@@ -45,109 +44,109 @@ namespace fileman
                 }
                 else
                 if (enters[0] != String.Empty)
-                switch (FMCommands.GetCommandNum(enters[0]))
-                {
-                    case 0:
-                        walls.Draw();
-                        ShowHelp();
-                        ShowAndSaveError("", false);
-                        break;
-                    case 1: //exit
-                        Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
-                        Properties.Settings.Default.Save();
-                        return;
-                    case 2: //создание папки
-                        if (!Directory.Exists(enters[1]))
-                        {
-                           try
-                           {
-                               Directory.CreateDirectory(enters[1]);
-                           }
-                           catch (Exception e)
-                           {
-                               ShowAndSaveError(e.Message, true);
-                           }
-                        }
-                        else
-                        {
-                            ShowAndSaveError(enters[1] + FMStrings.dirExist, false);
-                        }
-                        break;
-                    case 3: //смена текущей папки
-                        if (enters.Count < 2)
-                        {
-                            ShowAndSaveError(FMStrings.syntaxErr, false);
+                    switch (FMCommands.GetCommandNum(enters[0]))
+                    {
+                        case 0:
+                            walls.Draw();
+                            ShowHelp();
+                            ShowAndSaveError("", false);
                             break;
-                        };
-                        if (Directory.Exists(enters[1]))
-                            Directory.SetCurrentDirectory(enters[1]);
-                        else
-                            ShowAndSaveError(enters[1] +FMStrings.dirNotExist, false);
-                        break;
-                    case 4: //удаление файла 
-                        if (!File.Exists(enters[1]))
-                        {
-                            ShowAndSaveError(enters[1] +FMStrings.fileNotExist, false);
+                        case 1: //exit
+                            Properties.Settings.Default.DefaultPath = Directory.GetCurrentDirectory();
+                            Properties.Settings.Default.Save();
+                            return;
+                        case 2: //создание папки
+                            if (!Directory.Exists(enters[1]))
+                            {
+                                try
+                                {
+                                    Directory.CreateDirectory(enters[1]);
+                                }
+                                catch (Exception e)
+                                {
+                                    ShowAndSaveError(e.Message, true);
+                                }
+                            }
+                            else
+                            {
+                                ShowAndSaveError(enters[1] + FMStrings.dirExist, false);
+                            }
                             break;
-                        }
-                        try
-                        {
-                            File.Delete(enters[1]);
-                        }
-                        catch (Exception e) 
-                        {
-                            ShowAndSaveError(e.Message, true);
-                        }
-                        break;
-                    case 5: //удаление папки
-                        if (enters.Count != 2)
-                        {
+                        case 3: //смена текущей папки
+                            if (enters.Count < 2)
+                            {
                                 ShowAndSaveError(FMStrings.syntaxErr, false);
                                 break;
-                        }
-                        try
-                        {
-                            Directory.Delete(enters[1], true);
-                        }
-                        catch (Exception e)
-                        {
-                            ShowAndSaveError(e.Message, true);
-                        }
-                        break;
-                    case 6://COPY копирование файла 
-                        if (enters.Count < 3)
-                        {
-                            ShowAndSaveError(FMStrings.syntaxErr, false);
+                            };
+                            if (Directory.Exists(enters[1]))
+                                Directory.SetCurrentDirectory(enters[1]);
+                            else
+                                ShowAndSaveError(enters[1] + FMStrings.dirNotExist, false);
                             break;
-                        }
-                        FileCopyOrMove(false, enters[1], enters[2]);
-                        break;
-                    case 7://перемещение файла(-ов)
-                        if (enters.Count < 3)
-                        {
-                            ShowAndSaveError(FMStrings.syntaxErr, false);
+                        case 4: //удаление файла 
+                            if (!File.Exists(enters[1]))
+                            {
+                                ShowAndSaveError(enters[1] + FMStrings.fileNotExist, false);
+                                break;
+                            }
+                            try
+                            {
+                                File.Delete(enters[1]);
+                            }
+                            catch (Exception e)
+                            {
+                                ShowAndSaveError(e.Message, true);
+                            }
                             break;
-                        }
-                        FileCopyOrMove(true, enters[1], enters[2]);
-                        break;
+                        case 5: //удаление папки
+                            if (enters.Count != 2)
+                            {
+                                ShowAndSaveError(FMStrings.syntaxErr, false);
+                                break;
+                            }
+                            try
+                            {
+                                Directory.Delete(enters[1], true);
+                            }
+                            catch (Exception e)
+                            {
+                                ShowAndSaveError(e.Message, true);
+                            }
+                            break;
+                        case 6://COPY копирование файла 
+                            if (enters.Count < 3)
+                            {
+                                ShowAndSaveError(FMStrings.syntaxErr, false);
+                                break;
+                            }
+                            FileCopyOrMove(false, enters[1], enters[2]);
+                            break;
+                        case 7://перемещение файла(-ов)
+                            if (enters.Count < 3)
+                            {
+                                ShowAndSaveError(FMStrings.syntaxErr, false);
+                                break;
+                            }
+                            FileCopyOrMove(true, enters[1], enters[2]);
+                            break;
 
-                    case 8://COPYD копирование папки
-                        bool recurse = enters[1].ToUpper() == FMCommands.keyRecurs;
-                        if (recurse)
-                        {
+                        case 8://COPYD копирование папки
+                            bool recurse = enters[1].ToUpper() == FMCommands.keyRecurs;
+                            if (recurse)
+                            {
                                 if (enters.Count == 4)
                                     DirectoryCopy(enters[2], enters[3], recurse); //есть параметр -r
                                 else
                                     ShowAndSaveError(FMStrings.syntaxErr, false);
-                        }
-                        else
-                        {
+                            }
+                            else
+                            {
                                 if (enters.Count == 3)
                                     DirectoryCopy(enters[1], enters[2], false);// нет параметра
                                 else
                                     ShowAndSaveError(FMStrings.syntaxErr, false);
-                        }
-                        break;
+                            }
+                            break;
                         case 9://перемещение папки
                             if (enters.Count < 3)
                             {
@@ -172,33 +171,33 @@ namespace fileman
                             }
                             break;
                         case 10: //режим отображения
-                        if (enters.Count == 1)
-                        {
-                            Properties.Settings.Default.ViewMode = 0;
-                            break;
-                        }
-                        byte res;
-                        bool err = false;
-                        if (Byte.TryParse(enters[1], out res))
-                        {
-                            if (res > 0 && res < FMCommands.numOfViewMode + 1)
+                            if (enters.Count == 1)
                             {
-                                Properties.Settings.Default.ViewMode = res;
+                                Properties.Settings.Default.ViewMode = 0;
+                                break;
+                            }
+                            byte res;
+                            bool err = false;
+                            if (Byte.TryParse(enters[1], out res))
+                            {
+                                if (res > 0 && res < FMCommands.numOfViewMode + 1)
+                                {
+                                    Properties.Settings.Default.ViewMode = res;
+                                }
+                                else
+                                {
+                                    err = true;
+                                }
                             }
                             else
                             {
                                 err = true;
                             }
-                        }
-                        else
-                        {
-                            err = true;
-                        }
-                        if (err)
-                        {
-                            Console.WriteLine(FMStrings.syntaxErr);
-                        }
-                        break;
+                            if (err)
+                            {
+                                Console.WriteLine(FMStrings.syntaxErr);
+                            }
+                            break;
                         case 11: //количество строк на странице, без параметров 10
                             if (enters.Count == 1)
                             {
@@ -277,9 +276,9 @@ namespace fileman
                             ShowHelp();
                             ShowAndSaveError(enters[0] + FMStrings.notCommand, false);
                             break;
-                }
+                    }
                 Console.WriteLine();
-            } 
+            }
             while (true);
         }
 
@@ -486,10 +485,10 @@ namespace fileman
 
         static void InitSize()
         {
-            
+
             int w = Console.LargestWindowWidth;
             int h = Console.LargestWindowHeight;
-            FMConstants.fieldWidth =  (int)(w * FMConstants.scale);
+            FMConstants.fieldWidth = (int)(w * FMConstants.scale);
             FMConstants.fieldHeight = (int)(h * FMConstants.scale);
             Console.SetBufferSize(FMConstants.fieldWidth, FMConstants.fieldHeight);
             Console.SetWindowSize(FMConstants.fieldWidth, FMConstants.fieldHeight);
@@ -497,7 +496,7 @@ namespace fileman
             FMConstants.promptPosition = FMConstants.fieldHeight - 2;
             FMConstants.messPosition = FMConstants.promptPosition - 2;
 
-//Запрещаем изменение размеров окна
+            //Запрещаем изменение размеров окна
             IntPtr handle = GetConsoleWindow();
             IntPtr sysMenu = GetSystemMenu(handle, false);
             if (handle != IntPtr.Zero)
@@ -517,21 +516,21 @@ namespace fileman
             Console.ReadKey();
         }
 
-        static void ShowAndSaveError(string mess, bool save )
+        static void ShowAndSaveError(string mess, bool save)
         {
             ConsoleColor defColor = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Red;
             Console.SetCursorPosition(2, FMConstants.messPosition + 1);
             DateTime dt = DateTime.Now;
             if (save)
-            try
-            {
-                File.AppendAllText(Properties.Settings.Default.ErrorsFile, dt.ToString() + " " + mess + "\n");
-            }
-            catch (Exception e1)
-            {
-                Console.WriteLine(e1.Message);
-            }
+                try
+                {
+                    File.AppendAllText(Properties.Settings.Default.ErrorsFile, dt.ToString() + " " + mess + "\n");
+                }
+                catch (Exception e1)
+                {
+                    Console.WriteLine(e1.Message);
+                }
             Console.WriteLine(mess);
             Console.ForegroundColor = defColor;
             Console.SetCursorPosition(2, FMConstants.messPosition + 2);
@@ -543,7 +542,7 @@ namespace fileman
         {
             long size = 0;
             FileInfo[] files = d.GetFiles();
-            foreach (FileInfo fi in files) 
+            foreach (FileInfo fi in files)
             {
                 size += fi.Length;
             }
@@ -606,7 +605,7 @@ namespace fileman
                     Console.ForegroundColor = ConsoleColor.White;
                 };
                 Console.WriteLine(ls[i]);
-                Console.ForegroundColor= ConsoleColor.Gray;
+                Console.ForegroundColor = ConsoleColor.Gray;
                 total++;
             }
         }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace fileman
+namespace fileman2
 {
     class HorizontalLine : Figure
     {

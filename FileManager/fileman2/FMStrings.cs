@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace fileman
+namespace fileman2
 {
     public static class FMStrings
     {
@@ -32,10 +32,12 @@ namespace fileman
         public static readonly string tAccess = "ДОСТУП";
         public static readonly string tWrite = "ИЗМЕНЕН";
         public static readonly string dateTimePatt = "MM/dd/yyyy HH:mm:ss";
-        public static readonly string appTitle = "File manager FILEMAN v.1.1 2021";
+        public static readonly string appTitle = "File manager FILEMAN2 v.1.0 2022";
         public static readonly string prompt = "> ";
         public static readonly string tooLongString = "-->";
 
+        public static string keyRecurs = "-R";
+        public static string keyOverwrite = "-W";
 
         public static string GetSizeString(Int64 bytes)
         {
@@ -56,7 +58,7 @@ namespace fileman
 
         public static string GetTitle()
         {
-            int mode = Properties.Settings.Default.ViewMode;
+            int mode = Properties.Settings1.Default.ViewMode;
             string s = tName;
             string s1;
             s = s.PadRight(FMConstants.GetMaxFileNameLen(mode));
@@ -92,29 +94,10 @@ namespace fileman
         public static string GetFileAttributesString(System.IO.FileAttributes fa)
         {
             string s = string.Empty;
-            if ((fa & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
-            {
-                s += "R";
-            }
-            else s += "-";
-            s += " ";
-            if ((fa & FileAttributes.Archive) == FileAttributes.Archive)
-            {
-                s += "A";
-            }
-            else s += "-";
-            s += " ";
-            if ((fa & FileAttributes.Hidden) == FileAttributes.Hidden)
-            {
-                s += "H";
-            }
-            else s += "-";
-            s += " ";
-            if ((fa & FileAttributes.System) == FileAttributes.System)
-            {
-                s += "S";
-            }
-            else s += "-";
+            s += ((fa & FileAttributes.ReadOnly) == FileAttributes.ReadOnly) ? "R " : "- ";
+            s += ((fa & FileAttributes.Archive) == FileAttributes.Archive) ? "A " : "- ";
+            s += ((fa & FileAttributes.Hidden) == FileAttributes.Hidden) ? "H " : "- ";
+            s += ((fa & FileAttributes.System) == FileAttributes.System) ? "S " : "- ";
             return s;
         }
 
@@ -133,10 +116,5 @@ namespace fileman
             }
             return res;
         }
-
-
-
     }
-
-
 }
