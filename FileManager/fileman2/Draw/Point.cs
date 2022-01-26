@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace fileman
+namespace fileman2
 {
     public class Point
     {
@@ -51,7 +47,7 @@ namespace fileman
 
         public override string ToString()
         {
-            return x + ", " + y +"," +sym;
+            return x + ", " + y + "," + sym;
         }
 
         internal bool IsHit(Point p)

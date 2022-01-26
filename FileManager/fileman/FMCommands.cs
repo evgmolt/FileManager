@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace fileman
 {
-    public static class Commands
+    public static class FMCommands
     {
         public static byte numOfViewMode = 5;
         public static string[] Cmd =
@@ -29,7 +25,8 @@ namespace fileman
             "DI",// список дисков
             "LS",//отображение содержимого папки без смены текущей
             "LEV",//включает - выключает отображение второго уровня дерева
-            "COL"//Переключает цвет фона (черный - синий)
+            "COL",//Переключает цвет фона (черный - синий)
+            "REP"//Вывод информации о дисках в файл
         };
 
         public static string keyRecurs = "-R";

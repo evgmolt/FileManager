@@ -27,32 +27,32 @@ namespace fileman
             HorizontalLine upLine = new HorizontalLine(0, mapWidth, 0, horizontalBorder);
             HorizontalLine downLine = new HorizontalLine(0, mapWidth, mapHeight, horizontalBorder);
             VerticalLine leftLine = new VerticalLine(0, 0, mapHeight, verticalBorder);
-            VerticalLine rightLine = new VerticalLine(mapWidth, 0, mapHeight , verticalBorder);
+            VerticalLine rightLine = new VerticalLine(mapWidth, 0, mapHeight, verticalBorder);
             wallsList.Add(upLine);
             wallsList.Add(downLine);
             wallsList.Add(leftLine);
             wallsList.Add(rightLine);
-            Point downRight = new Point(mapWidth , mapHeight , downAndRightBorder);
+            Point downRight = new Point(mapWidth, mapHeight, downAndRightBorder);
             anglesList.Add(downRight);
-            Point downLeft = new Point(0, mapHeight , downAndLeftBroder);
+            Point downLeft = new Point(0, mapHeight, downAndLeftBroder);
             anglesList.Add(downLeft);
             Point upLeft = new Point(0, 0, upAndLeftBroder);
             anglesList.Add(upLeft);
-            Point upRight = new Point(mapWidth , 0, upAndRightBroder);
+            Point upRight = new Point(mapWidth, 0, upAndRightBroder);
             anglesList.Add(upRight);
-            HorizontalLine messLine = new HorizontalLine(0, mapWidth , messPos, horizontalBorder);
+            HorizontalLine messLine = new HorizontalLine(0, mapWidth, messPos, horizontalBorder);
             wallsList.Add(messLine);
             Point ptLeft = new Point(0, messPos, tLeft);
             anglesList.Add(ptLeft);
-            Point ptRight = new Point(mapWidth , messPos, tRight);
+            Point ptRight = new Point(mapWidth, messPos, tRight);
             anglesList.Add(ptRight);
         }
 
         internal void Draw()
         {
-            Console.BackgroundColor = Const.backColor;
+            Console.BackgroundColor = FMConstants.backColor;
             Console.Clear();
-            foreach(var wall in wallsList)
+            foreach (var wall in wallsList)
             {
                 wall.Draw();
             }
@@ -64,9 +64,9 @@ namespace fileman
 
         internal bool IsHit(Figure figure)
         {
-            foreach(var wall in wallsList)
+            foreach (var wall in wallsList)
             {
-                if(wall.IsHit(figure))
+                if (wall.IsHit(figure))
                 {
                     return true;
                 }

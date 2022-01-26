@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace fileman
 {
-    public static class Str
+    public static class FMStrings
     {
         public static readonly string notCommand = " не является командой";
         public static readonly string syntaxErr = "Синтаксическая ошибка";
@@ -25,6 +21,8 @@ namespace fileman
         public static readonly string errorsDirName = "errors";
         public static readonly string errorsFileName = "exception.txt";
         public static readonly string driveNotReady = "Устройство не готово";
+        public static readonly string reportOk = "Отчет об использовании диска успешно создан";
+        public static readonly string reportError = "Ошибка создания отчета";
         public static readonly string[] driveInfoTitle = { "Диск", "Тип", "Формат", "Метка", "Размер", "Свободно", "Доступно" };
 
         public static readonly string tName = "ИМЯ";
@@ -34,7 +32,7 @@ namespace fileman
         public static readonly string tAccess = "ДОСТУП";
         public static readonly string tWrite = "ИЗМЕНЕН";
         public static readonly string dateTimePatt = "MM/dd/yyyy HH:mm:ss";
-        public static readonly string appTitle = "File manager FILEMAN v.1.0 2021";
+        public static readonly string appTitle = "File manager FILEMAN v.1.1 2021";
         public static readonly string prompt = "> ";
         public static readonly string tooLongString = "-->";
 
@@ -61,32 +59,32 @@ namespace fileman
             int mode = Properties.Settings.Default.ViewMode;
             string s = tName;
             string s1;
-            s = s.PadRight(Const.GetMaxFileNameLen(mode));
+            s = s.PadRight(FMConstants.GetMaxFileNameLen(mode));
             if (mode > 0)
             {
                 s1 = tSize;
-                s += s1.PadRight(Const.sizeStringLen);
+                s += s1.PadRight(FMConstants.sizeStringLen);
             }
             if (mode > 1)
             {
                 s1 = tAttr;
-                s += s1.PadRight(Const.attrStringLen);
+                s += s1.PadRight(FMConstants.attrStringLen);
             }
             if (mode > 2)
             {
                 s1 = tCreation;
-                s1 = s1.PadRight(Const.timeStringLen);
+                s1 = s1.PadRight(FMConstants.timeStringLen);
                 s += s1;
             }
             if (mode > 3)
             {
                 s1 = tAccess;
-                s += s1.PadRight(Const.timeStringLen);
+                s += s1.PadRight(FMConstants.timeStringLen);
             }
             if (mode > 4)
             {
                 s1 = tWrite;
-                s += s1.PadRight(Const.timeStringLen);
+                s += s1.PadRight(FMConstants.timeStringLen);
             }
             return s;
         }
